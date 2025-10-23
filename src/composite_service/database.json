@@ -1,6 +1,6 @@
 {
   "requests": {
-    "REQ-B7071CBE": {
+    "REQ-73AA48B4": {
       "text": "Nom du Client: John Doe\nAdresse: 123 Rue de la Liberté, 75001 Paris, France\nEmail: john.doe@email.com\nNuméro de Téléphone: +33 123 456 789\nMontant du Prêt Demandé: 200000 EUR\nDurée du Prêt: 20 ans\nDescription de la Propriété: Maison à deux étages avec jardin, située dans un quartier résidentiel calme.\nRevenu Mensuel: 5000 EUR\nDépenses Mensuelles: 3000 EUR\n",
       "extracted": {
         "name": "John Doe",
@@ -32,6 +32,41 @@
         "details": "Credit score too low (650 < 700). ; High debt-to-income ratio (0.6 >= 0.5). ; Loan amount 200000€ exceeds 80% of property value (235000€).",
         "score": 650,
         "estimated_value": 235000
+      },
+      "status": "DONE"
+    },
+    "REQ-7828EAC6": {
+      "text": "\nNom du Client: Alice Martin\nAdresse: 12 Avenue des Champs-Élysées, 75008 Paris, France\nEmail: alice.martin@email.com\nNuméro de Téléphone: +33 612 345 678\nMontant du Prêt Demandé: 180000 EUR\nDurée du Prêt: 15 ans\nDescription de la Propriété: Appartement moderne de 3 pièces situé dans le 8e arrondissement de Paris.\nRevenu Mensuel: 7200 EUR\nDépenses Mensuelles: 2500 EUR\n",
+      "extracted": {
+        "name": "Alice Martin",
+        "address": "12 Avenue des Champs-Élysées, 75008 Paris, France",
+        "email": "alice.martin@email.com",
+        "phone": "+33 612 345 678",
+        "loan_amount": "180000 EUR\nDur",
+        "loan_duration": "15",
+        "property_description": "Appartement moderne de 3 pièces situé dans le 8e arrondissement de Paris.",
+        "monthly_income": "7200 EUR\nD",
+        "monthly_expenses": "2500 EUR",
+        "loan_amount_eur": 180000,
+        "monthly_income_eur": 7200,
+        "monthly_expenses_eur": 2500,
+        "loan_duration_years": 15
+      },
+      "credit": {
+        "score": 744,
+        "debt_ratio": 0.35,
+        "details": "Income=7200€, Expenses=2500€, DebtRatio=0.35"
+      },
+      "property": {
+        "estimated_value": 200000,
+        "compliant": true,
+        "details": "description_length=73"
+      },
+      "decision": {
+        "decision": "REJECTED",
+        "details": "Loan amount 180000€ exceeds 80% of property value (200000€).",
+        "score": 744,
+        "estimated_value": 200000
       },
       "status": "DONE"
     }

@@ -1,2 +1,2 @@
-
-2025-10-23T10:16:32.315919 | REQ-B7071CBE | to=john.doe@email.com | Decision=REJECTED; details=Credit score too low (650 < 700). ; High debt-to-income ratio (0.6 >= 0.5). ; Loan amount 200000€ exceeds 80% of property value (235000€).
+2025-10-23T10:18:46.455473 | REQ-73AA48B4 | to=john.doe@email.com | Decision=REJECTED; details=Credit score too low (650 < 700). ; High debt-to-income ratio (0.6 >= 0.5). ; Loan amount 200000€ exceeds 80% of property value (235000€).
+2025-10-23T10:35:54.601684 | REQ-7828EAC6 | to=alice.martin@email.com | Decision=REJECTED; details=Loan amount 180000€ exceeds 80% of property value (200000€).
