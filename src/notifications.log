@@ -1,1 +1,2 @@
 
+2025-10-23T10:16:32.315919 | REQ-B7071CBE | to=john.doe@email.com | Decision=REJECTED; details=Credit score too low (650 < 700). ; High debt-to-income ratio (0.6 >= 0.5). ; Loan amount 200000€ exceeds 80% of property value (235000€).

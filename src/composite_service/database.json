@@ -1,3 +1,39 @@
 {
-  "requests": {}
+  "requests": {
+    "REQ-B7071CBE": {
+      "text": "Nom du Client: John Doe\nAdresse: 123 Rue de la Liberté, 75001 Paris, France\nEmail: john.doe@email.com\nNuméro de Téléphone: +33 123 456 789\nMontant du Prêt Demandé: 200000 EUR\nDurée du Prêt: 20 ans\nDescription de la Propriété: Maison à deux étages avec jardin, située dans un quartier résidentiel calme.\nRevenu Mensuel: 5000 EUR\nDépenses Mensuelles: 3000 EUR\n",
+      "extracted": {
+        "name": "John Doe",
+        "address": "123 Rue de la Liberté, 75001 Paris, France",
+        "email": "john.doe@email.com",
+        "phone": "+33 123 456 789",
+        "loan_amount": "200000 EUR\nDur",
+        "loan_duration": "20",
+        "property_description": "Maison à deux étages avec jardin, située dans un quartier résidentiel calme.",
+        "monthly_income": "5000 EUR\nD",
+        "monthly_expenses": "3000 EUR",
+        "loan_amount_eur": 200000,
+        "monthly_income_eur": 5000,
+        "monthly_expenses_eur": 3000,
+        "loan_duration_years": 20
+      },
+      "credit": {
+        "score": 650,
+        "debt_ratio": 0.6,
+        "details": "Income=5000€, Expenses=3000€, DebtRatio=0.6"
+      },
+      "property": {
+        "estimated_value": 235000,
+        "compliant": true,
+        "details": "description_length=76"
+      },
+      "decision": {
+        "decision": "REJECTED",
+        "details": "Credit score too low (650 < 700). ; High debt-to-income ratio (0.6 >= 0.5). ; Loan amount 200000€ exceeds 80% of property value (235000€).",
+        "score": 650,
+        "estimated_value": 235000
+      },
+      "status": "DONE"
+    }
+  }
 }
