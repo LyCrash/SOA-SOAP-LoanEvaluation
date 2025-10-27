@@ -1,113 +1,74 @@
-"""
-Orchestrateur principal exposé en SOAP (Spyne).
-Il offre deux opérations:
- - SubmitLoanRequest(text) -> retourne request_id
- - GetEvaluation(request_id) -> retourne texte structuré du résultat
-Chaque méthode est commentée pour indiquer ses paramètres et retours.
-"""
-
-import logging
-from spyne import ServiceBase, rpc, Application, Unicode
+import sys, logging, json, os
+from spyne import Application, rpc, ServiceBase, Unicode, AnyDict
 from spyne.protocol.soap import Soap11
 from spyne.server.wsgi import WsgiApplication
+from spyne.util.wsgi_wrapper import run_twisted
+from suds.client import Client
 
-from .utils import new_request_id, read_db, write_db
-from services.information_extraction import extract_information
-from services.credit_check import check_credit
-from services.property_evaluation import evaluate_property
-from services.decision_service import decide
-from services.notification import notify
+from datetime import datetime
+LOG_PATH = os.path.join(os.path.dirname(__file__), "..", "notifications.log")
+def notify(request_id: str, to_email: str, message: str):
+    """Enregistre une notification simulée dans notifications.log"""
+    now = datetime.utcnow().isoformat()
+    entry = f"{now} | {request_id} | to={to_email} | {message}\n"
+    with open(LOG_PATH, "a", encoding="utf-8") as f:
+        f.write(entry)
 
-logger = logging.getLogger("ServiceWebComposite")
-logger.setLevel(logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
-class ServiceWebComposite(ServiceBase):
+IE_URL = "http://127.0.0.1:8001/InformationExtractionService?wsdl"
+CC_URL = "http://127.0.0.1:8002/CreditCheckService?wsdl"
+PE_URL = "http://127.0.0.1:8003/PropertyEvaluationService?wsdl"
+DS_URL = "http://127.0.0.1:8004/DecisionService?wsdl"
+DB_FILE = "composite_service/database.json"
+
+class LoanEvaluationComposite(ServiceBase):
     @rpc(Unicode, _returns=Unicode)
-    def SubmitLoanRequest(ctx, text):
-        """
-        Reçoit la demande de prêt sous forme de texte libre.
-        Paramètre:
-          - text: string contenant la demande du client (texte libre)
-        Retour:
-          - request_id: identifiant unique de la demande (string)
-        Comportement:
-          - Extrait les informations, appelle les services internes (credit, property),
-            prend la décision, stocke le résultat dans database.json, notifie (simulé).
-        """
-        logger.debug("Received SubmitLoanRequest")
-        req_id = new_request_id()
+    def submitRequest(ctx, request_text):
+        ie = Client(IE_URL)
+        cc = Client(CC_URL)
+        pe = Client(PE_URL)
+        ds = Client(DS_URL)
 
-        # 1) Extraction
-        extracted = extract_information(text)
-        logger.debug("Extracted: %s", extracted)
+        extracted = ie.service.extract_information(request_text)
+        parsed = json.loads(extracted)
 
-        # 2) Vérification de solvabilité
-        credit = check_credit(extracted)
-        logger.debug("Credit check: %s", credit)
+        score_json = cc.service.check_credit(extracted)
+        score = json.loads(score_json)["credit_score"]
 
-        # 3) Évaluation propriété
-        prop = evaluate_property(extracted)
-        logger.debug("Property eval: %s", prop)
+        property_json = pe.service.evaluate_property(extracted)
+        property_value = json.loads(property_json)["property_value"]
 
-        # 4) Décision
-        decision = decide(extracted, credit, prop)
-        logger.debug("Decision: %s", decision)
-
-        # 5) Stockage dans DB JSON
-        db = read_db()
-        db["requests"][req_id] = {
-            "text": text,
-            "extracted": extracted,
-            "credit": credit,
-            "property": prop,
-            "decision": decision,
-            "status": "DONE"
+        data = {
+            "credit_score": score,
+            "property_value": property_value,
+            "loan_amount": float(parsed.get("montant_pret", 0))
         }
-        write_db(db)
+        decision_json = ds.service.make_decision(json.dumps(data))
+        decision = json.loads(decision_json)
 
-        # 6) Notification simulée
-        email = extracted.get("email") or "unknown"
-        summary = f"Decision={decision.get('decision')}; details={decision.get('details')}"
-        notify(req_id, email, summary)
+        request_id = "REQ_" + str(abs(hash(request_text)) % 10000)
+        record = {"request_id": request_id, "result": decision}
+        with open(DB_FILE, "w") as f:
+            json.dump(record, f, indent=4)
 
-        return req_id
+        notify(request_id, parsed.get("email", "unknown@email.com"), decision["message"])
+        return json.dumps({"request_id": request_id, "decision": decision})
 
     @rpc(Unicode, _returns=Unicode)
-    def GetEvaluation(ctx, request_id):
-        """
-        Récupère le résultat de l'évaluation pour un request_id donné.
-        Paramètres:
-          - request_id: l'identifiant de la demande (string)
-        Retour:
-          - texte structuré (string) décrivant la décision et les détails
-        """
-        logger.debug("Received GetEvaluation for %s", request_id)
-        db = read_db()
-        req = db.get("requests", {}).get(request_id)
-        if not req:
-            return f"ERROR: request_id {request_id} not found."
+    def getResult(ctx, request_id):
+        with open(DB_FILE, "r") as f:
+            data = json.load(f)
+        if data["request_id"] == request_id:
+            return json.dumps(data["result"])
+        return json.dumps({"status": "error", "raison": "Aucune demande trouvée."})
 
-        dec = req.get("decision", {})
-        extracted = req.get("extracted", {})
-        credit = req.get("credit", {})
-        prop = req.get("property", {})
+app = Application(
+    [LoanEvaluationComposite],
+    tns='loan.composite',
+    in_protocol=Soap11(validator='lxml'),
+    out_protocol=Soap11()
+)
 
-        # Construire un texte explicatif
-        lines = [
-            f"Request ID: {request_id}",
-            f"Applicant: {extracted.get('name')}",
-            f"Decision: {dec.get('decision')}",
-            f"Decision details: {dec.get('details')}",
-            f"Credit score: {credit.get('score')} (details: {credit.get('details')})",
-            f"Debt ratio: {credit.get('debt_ratio')}",
-            f"Estimated property value: {prop.get('estimated_value')}€ (compliant: {prop.get('compliant')})"
-        ]
-        return "\n".join(lines)
-
-
-# Spyne application builder (exposed by main.py)
-soap_app = Application([ServiceWebComposite],
-                       tns="http://example.org/loan_evaluation",
-                       in_protocol=Soap11(validator='lxml'),
-                       out_protocol=Soap11())
-wsgi_app = WsgiApplication(soap_app)
+if __name__ == '__main__':
+    sys.exit(run_twisted([(WsgiApplication(app), b'LoanEvaluationService')], 8000))

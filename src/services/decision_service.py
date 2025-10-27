@@ -1,39 +1,34 @@
-"""
-Service de décision : agrège score credit + evaluation propriété + règles de l'institution.
-Retourne 'APPROVED' ou 'REJECTED' avec explications.
-"""
-from typing import Dict
+import sys, logging, json
+from spyne import Application, rpc, ServiceBase, Unicode
+from spyne.protocol.soap import Soap11
+from spyne.server.wsgi import WsgiApplication
+from spyne.util.wsgi_wrapper import run_twisted
 
-def decide(extracted: Dict, credit: Dict, property_eval: Dict) -> Dict:
-    """
-    Règles simplifiées :
-    - threshold_score = 700
-    - loan must be <= estimated_value * 0.8
-    - debt_ratio must be < 0.5
-    """
-    score = credit.get("score")
-    debt_ratio = credit.get("debt_ratio")
-    est_value = property_eval.get("estimated_value") or 0
-    loan = extracted.get("loan_amount_eur") or 0
+logging.basicConfig(level=logging.INFO)
 
-    reasons = []
-    approved = True
+class DecisionService(ServiceBase):
+    @rpc(Unicode, _returns=Unicode)
+    def make_decision(ctx, data):
+        """Receives JSON data and returns decision JSON."""
+        parsed = json.loads(data)
+        score = parsed.get("credit_score", 0)
+        value = parsed.get("property_value", 0)
+        loan = parsed.get("loan_amount", 0)
+        approved = score > 50 and value > loan * 0.8
+        decision = {
+            "approved": approved,
+            "message": "Approved" if approved else "Rejected"
+        }
+        result = json.dumps(decision)
+        print(f"[DS] Output: {result}")
+        return result
 
-    if score < 700:
-        approved = False
-        reasons.append(f"Credit score too low ({score} < 700).")
-    if debt_ratio is not None and debt_ratio >= 0.5:
-        approved = False
-        reasons.append(f"High debt-to-income ratio ({debt_ratio} >= 0.5).")
-    if loan > est_value * 0.8:
-        approved = False
-        reasons.append(f"Loan amount {loan}€ exceeds 80% of property value ({est_value}€).")
+app = Application(
+    [DecisionService],
+    tns='loan.services.decision',
+    in_protocol=Soap11(validator='lxml'),
+    out_protocol=Soap11()
+)
 
-    if approved:
-        decision = "APPROVED"
-        details = "All checks passed."
-    else:
-        decision = "REJECTED"
-        details = " ; ".join(reasons) if reasons else "Rejected by policy."
-
-    return {"decision": decision, "details": details, "score": score, "estimated_value": est_value}
+if __name__ == '__main__':
+    sys.exit(run_twisted([(WsgiApplication(app), b'DecisionService')], 8004))

@@ -1,14 +1,24 @@
-"""
-Notification service (simulé) : écrit un résumé dans notifications.log
-"""
-import os
-from datetime import datetime
+import sys, logging, json
+from spyne import Application, rpc, ServiceBase, Unicode
+from spyne.protocol.soap import Soap11
+from spyne.server.wsgi import WsgiApplication
+from spyne.util.wsgi_wrapper import run_twisted
+from composite_service.utils import notify
 
-LOG_PATH = os.path.join(os.path.dirname(__file__), "..", "notifications.log")
+logging.basicConfig(level=logging.INFO)
 
-def notify(request_id: str, to_email: str, message: str):
-    """Enregistre une notification simulée dans notifications.log"""
-    now = datetime.utcnow().isoformat()
-    entry = f"{now} | {request_id} | to={to_email} | {message}\n"
-    with open(LOG_PATH, "a", encoding="utf-8") as f:
-        f.write(entry)
+class NotificationService(ServiceBase):
+    @rpc(Unicode, Unicode, Unicode, _returns=Unicode)
+    def send_notification(ctx, request_id, email, message):
+        notify(request_id, email, message)
+        return f"Notification logged for {email}"
+
+app = Application(
+    [NotificationService],
+    tns='loan.services.notification',
+    in_protocol=Soap11(validator='lxml'),
+    out_protocol=Soap11()
+)
+
+if __name__ == '__main__':
+    sys.exit(run_twisted([(WsgiApplication(app), b'NotificationService')], 8005))
