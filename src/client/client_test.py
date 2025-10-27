@@ -14,7 +14,7 @@ Montant du Prêt Demandé: 200000
 Durée du Prêt: 20 ans
 Description de la Propriété: Maison à deux étages avec jardin, située dans un quartier résidentiel calme.
 Revenu Mensuel: 5000
-Dépenses Mensuelles: 3000
+Dépenses Mensuelles: 1000
 """
 
 result_json = client.service.submitRequest(text)

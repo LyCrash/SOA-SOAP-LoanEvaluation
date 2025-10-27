@@ -1,7 +1,32 @@
 {
-    "request_id": "REQ_798",
-    "result": {
+  "requests": {
+    "REQ_4283": {
+      "result": {
         "approved": false,
         "message": "Rejected"
+      },
+      "timestamp": "2025-10-27T21:38:14.934578"
+    },
+    "REQ_3051": {
+      "result": {
+        "approved": false,
+        "message": "Rejected"
+      },
+      "timestamp": "2025-10-27T21:38:39.487444"
+    },
+    "REQ_1643": {
+      "result": {
+        "approved": true,
+        "message": "Approved"
+      },
+      "timestamp": "2025-10-27T21:43:37.721055"
+    },
+    "REQ_5463": {
+      "result": {
+        "approved": false,
+        "message": "Rejected"
+      },
+      "timestamp": "2025-10-27T21:50:41.931838"
     }
+  }
 }
