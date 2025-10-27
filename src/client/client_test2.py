@@ -1,41 +1,47 @@
-"""
-Client test script for a positive (approved) loan request scenario.
-This connects to the SOAP composite service running on localhost:8000.
-"""
-
+import json
 from suds.client import Client
 import time
 
-# --- URL of the running SOAP composite service ---
-url = "http://127.0.0.1:8000/LoanEvaluationService?wsdl"
+COMPOSITE_URL = "http://127.0.0.1:8000/LoanEvaluationService?wsdl"
 
-# Initialize the SOAP client
-client = Client(url)
+if __name__ == "__main__":
+    # Example natural-language loan request
+    request_text = """
+    Nom du Client: Alice Dupont
+    Adresse: 12 rue des Lilas, Lyon
+    Email: alice.dupont@example.com
+    Numéro de Téléphone: 0601020304
+    Montant du Prêt Demandé: 200000
+    Revenu Mensuel: 4500
+    Dépenses Mensuelles: 1800
+    Description de la Propriété: Appartement de 4 pièces situé dans un quartier calme, proche des transports.
+    """
 
-# --- Example of a loan request with good financial health ---
-loan_request_text = """
-Nom du Client: Alice Martin
-Adresse: 12 Avenue des Champs-Élysées, 75008 Paris, France
-Email: alice.martin@email.com
-Numéro de Téléphone: +33 612 345 678
-Montant du Prêt Demandé: 180000 EUR
-Durée du Prêt: 15 ans
-Description de la Propriété: Appartement moderne de 3 pièces situé dans le 8e arrondissement de Paris.
-Revenu Mensuel: 7200 EUR
-Dépenses Mensuelles: 2500 EUR
-"""
+    print("[Client] Connecting to composite service...")
+    client = Client(COMPOSITE_URL)
 
-print("🟢 Submitting the loan request for evaluation...")
+    print("[Client] Submitting request...")
+    response = client.service.submitRequest(request_text)
+    
 
-# --- Step 1: Submit the loan request ---
-request_id = client.service.SubmitRequest(loan_request_text)
-print(f"✅ Request submitted successfully with ID: {request_id}")
+    try:
+        parsed = json.loads(response)
+        print("=== Parsed Response ===")
+        print(json.dumps(parsed, indent=2, ensure_ascii=False))
+    except Exception as e:
+        print(f"Error parsing JSON: {e}")
+        print(f"\n=== Raw Response ===\n{response}\n")
+        parsed = {}
 
-# --- Step 2: Retrieve the evaluation result ---
-print("\nGetting evaluation result...")
-response_result = client.service.GetResult(request_id)
-time.sleep(0.5)
-
-print("\n📊 --- Loan Evaluation Result ---")
-print(response_result)
-print("--------------------------------------")
+    # Optionally, fetch results later using getResult
+    if "request_id" in parsed:
+        request_id = parsed["request_id"]
+        print(f"\n[Client] Fetching result for request_id={request_id}...")
+        time.sleep(1.5)
+        result = client.service.getResult(request_id)
+        try:
+            result_json = json.loads(result)
+            print(json.dumps(result_json, indent=2, ensure_ascii=False))
+        except Exception:
+            print(f"\n=== getResult() ===\n{result}\n")
+            pass
