@@ -1,23 +1,29 @@
-from suds.client import Client
 import json
+from suds.client import Client
 
-COMPOSITE_URL = "http://127.0.0.1:8000/LoanEvaluationService?wsdl"
+COMPOSITE = "http://127.0.0.1:8000/LoanEvaluationService?wsdl"
+client = Client(COMPOSITE)
 
-client = Client(COMPOSITE_URL)
-
-text = """
-Nom du Client: John Doe
-Adresse: 123 Rue de la Liberté, 75001 Paris, France
-Email: john.doe@email.com
-Numéro de Téléphone: +33 123 456 789
-Montant du Prêt Demandé: 200000
-Durée du Prêt: 20 ans
-Description de la Propriété: Maison à deux étages avec jardin, située dans un quartier résidentiel calme.
-Revenu Mensuel: 5000
-Dépenses Mensuelles: 1000
+loan_text = """
+Nom du Client: Jeanne Petit
+Adresse: 5 Rue des Fleurs, Paris
+Email: jeanne.petit@email.com
+Numéro de Téléphone: +33600111222
+Montant du Prêt Demandé: 300000
+Revenu Mensuel: 2000
+Dépenses Mensuelles: 1500
+Description de la Propriété: Petit appartement ancien, nécessite quelques travaux, proche d'une route passante.
 """
 
-result_json = client.service.submitRequest(text)
-print("\n=== Response ===")
-print(result_json)
-print("\nParsed:", json.loads(result_json))
+print("Submitting (likely REJECT) ...")
+resp_json = client.service.submitRequest(loan_text)
+resp = json.loads(resp_json)
+print(f"Request {json.dumps(resp['request_id'], indent=2, ensure_ascii=False)} submitted successfully")
+
+# The service is synchronous: decision is included in response.
+if resp.get("status") == "done":
+    print("\nFinal decision:")
+    print(json.dumps(resp["decision"], indent=2, ensure_ascii=False))
+    print(f"\nRequest ID: {resp['request_id']}")
+else:
+    print("\nError or unexpected response.")

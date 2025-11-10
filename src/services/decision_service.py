@@ -8,13 +8,13 @@ logging.basicConfig(level=logging.INFO)
 
 
 # ---------------------------------------------------------------------
-# Institutional Policy Parameters
+# Institutional Policy Parameters (Balanced for Realistic Outcomes)
 # ---------------------------------------------------------------------
 
 POLICY = {
-    "min_credit_score": 55,           # Minimum acceptable score
-    "max_loan_to_value": 0.85,        # Max ratio (loan/property value)
-    "max_debt_to_income": 0.4,        # Max ratio (debt/income)
+    "min_credit_score": 50,           # Slightly lower threshold (was 55)
+    "max_loan_to_value": 0.9,         # Slightly higher tolerance
+    "max_debt_to_income": 0.5,        # Allow higher ratio for realistic middle-class loans
     "base_interest_rate": 3.0,        # %
 }
 
@@ -23,8 +23,47 @@ POLICY = {
 # Decision Logic
 # ---------------------------------------------------------------------
 
+# def analyze_risk(data):
+#     """Perform a balanced financial and risk analysis."""
+#     credit_score = float(data.get("credit_score", 0))
+#     property_value = float(data.get("property_value", 0))
+#     loan_amount = float(data.get("loan_amount", 0))
+#     income = float(data.get("revenu_mensuel", 0))
+#     expenses = float(data.get("depenses_mensuelles", 0))
+#     employment_stable = data.get("emploi_stable", True)
+
+#     # Derived metrics
+#     monthly_savings = max(0, income - expenses)
+#     debt_to_income = loan_amount / (income * 12) if income > 0 else 1
+#     loan_to_value = loan_amount / property_value if property_value > 0 else 1
+
+#     # --- Balanced risk score heuristic ---
+#     # Credit score and employment stability weigh more.
+#     # Financial ratios still matter but don't dominate.
+#     risk_score = (
+#         (credit_score / 100) * 0.6     # Strong influence
+#         + (1 - loan_to_value) * 0.2    # Lower weight
+#         + (1 - min(debt_to_income, 1)) * 0.15  # Capped effect
+#         + (0.05 if employment_stable else 0)
+#     )
+#     risk_score = min(max(risk_score, 0), 1)
+
+#     default_prob = round((1 - risk_score) * 100, 2)
+
+#     return {
+#         "credit_score": credit_score,
+#         "loan_amount": loan_amount,
+#         "property_value": property_value,
+#         "loan_to_value": round(loan_to_value, 2),
+#         "debt_to_income": round(debt_to_income, 2),
+#         "monthly_savings": round(monthly_savings, 2),
+#         "employment_stable": employment_stable,
+#         "risk_score": round(risk_score * 100, 2),
+#         "default_probability": default_prob
+#     }
+
 def analyze_risk(data):
-    """Perform a basic financial and risk analysis."""
+    """Perform a balanced financial and risk analysis."""
     credit_score = float(data.get("credit_score", 0))
     property_value = float(data.get("property_value", 0))
     loan_amount = float(data.get("loan_amount", 0))
@@ -34,18 +73,23 @@ def analyze_risk(data):
 
     # Derived metrics
     monthly_savings = max(0, income - expenses)
-    debt_to_income = loan_amount / (income * 12) if income > 0 else 1
+    
+    # --- Debt-to-Income ratio (more realistic) ---
+    # Approximate monthly loan repayment ≈ 1% of the loan amount
+    estimated_monthly_payment = loan_amount * 0.01
+    debt_to_income = estimated_monthly_payment / income if income > 0 else 1
+
+    # Loan-to-Value ratio
     loan_to_value = loan_amount / property_value if property_value > 0 else 1
 
-    # Risk score (simple heuristic)
+    # --- Balanced risk score heuristic ---
     risk_score = (
-        (credit_score / 100) * 0.5
-        + (1 - loan_to_value) * 0.3
-        + (1 - debt_to_income) * 0.15
+        (credit_score / 100) * 0.6
+        + (1 - loan_to_value) * 0.2
+        + (1 - min(debt_to_income, 1)) * 0.15
         + (0.05 if employment_stable else 0)
     )
     risk_score = min(max(risk_score, 0), 1)
-
     default_prob = round((1 - risk_score) * 100, 2)
 
     return {
@@ -89,7 +133,9 @@ def apply_policies(risk_data):
 
     # --- Debt-to-income policy ---
     if risk_data["debt_to_income"] > POLICY["max_debt_to_income"]:
-        approved = False
+        # Only critical if ratio > 0.6 (less strict for mid-range cases)
+        if risk_data["debt_to_income"] > 0.6:
+            approved = False
         reasons.append(
             f"Debt-to-Income ratio ({risk_data['debt_to_income']:.2f}) is higher than the recommended maximum ({POLICY['max_debt_to_income']})."
         )
@@ -98,7 +144,7 @@ def apply_policies(risk_data):
         )
 
     # --- Global risk score ---
-    if risk_data["risk_score"] < 40:
+    if risk_data["risk_score"] < 35:
         approved = False
         reasons.append(
             f"Global risk score ({risk_data['risk_score']}) is too low, indicating a high probability of default."
@@ -115,15 +161,16 @@ def apply_policies(risk_data):
             "Consider applying once your employment situation has stabilized or provide additional financial guarantees."
         )
 
-    # Interest rate calculation (depends on risk)
+    # --- Interest rate calculation (risk-based pricing) ---
     base_rate = POLICY["base_interest_rate"]
-    risk_adjustment = (100 - risk_data["risk_score"]) / 20  # higher risk → higher rate
+    # More moderate slope for interest rate changes
+    risk_adjustment = (100 - risk_data["risk_score"]) / 25
     interest_rate = round(base_rate + risk_adjustment, 2)
 
-    # If approved, give positive feedback
+    # If approved, provide positive message
     if approved:
-        reasons.append("Applicant meets all institutional requirements.")
-        recommendations.append("Maintain your good financial habits to preserve your creditworthiness.")
+        reasons.append("Applicant meets institutional risk and policy requirements.")
+        recommendations.append("Maintain your strong financial profile and responsible credit behavior.")
 
     return approved, reasons, recommendations, interest_rate
 

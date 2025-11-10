@@ -13,22 +13,33 @@ SERVICES = [
     ("Composite Service", "composite_service/service_composite.py", 8000),
 ]
 
-PYTHON = sys.executable  # automatically uses your venv Python interpreter
+PYTHON = sys.executable  # uses current environment's Python
 PROCESSES = []
 
 
 def run_service(name, script, port):
-    """Start one service as a subprocess."""
+    """Start one service as a detached subprocess."""
     print(f"🚀 Starting {name} on port {port}...")
-    proc = subprocess.Popen([PYTHON, script], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    log_dir = os.path.join(os.path.dirname(__file__), "logs")
+    os.makedirs(log_dir, exist_ok=True)
+    log_file = os.path.join(log_dir, f"{name.replace(' ', '_').lower()}.log")
+
+    with open(log_file, "w", encoding="utf-8") as f:
+        # Start without piping stdout/stderr to prevent blocking
+        proc = subprocess.Popen(
+            [PYTHON, script],
+            stdout=f,
+            stderr=subprocess.STDOUT,
+            creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0
+        )
+
     PROCESSES.append((name, proc))
-    time.sleep(1)  # Give the service time to start
+    time.sleep(1)
+
     if proc.poll() is None:
-        print(f"✅ {name} running (PID: {proc.pid})")
+        print(f"✅ {name} running (PID: {proc.pid}) → logs in {log_file}")
     else:
-        print(f"❌ Failed to start {name} — check logs below:")
-        stdout, stderr = proc.communicate()
-        print(stderr.decode())
+        print(f"❌ Failed to start {name}")
     return proc
 
 
@@ -43,7 +54,7 @@ def start_all():
             print(f"⚠️ Warning: script not found -> {script_path}")
             continue
         run_service(name, script_path, port)
-        time.sleep(2)  # small delay between launches
+        time.sleep(2)
 
     print("\n🌐 All services started successfully!\n")
     print("🧩 Composite service is available at:")
@@ -56,8 +67,11 @@ def stop_all():
     for name, proc in PROCESSES:
         if proc.poll() is None:
             print(f"Terminating {name} (PID: {proc.pid})...")
-            proc.terminate()
             try:
+                if os.name == "nt":
+                    proc.send_signal(signal.CTRL_BREAK_EVENT)
+                else:
+                    proc.terminate()
                 proc.wait(timeout=3)
             except subprocess.TimeoutExpired:
                 print(f"Force killing {name}")

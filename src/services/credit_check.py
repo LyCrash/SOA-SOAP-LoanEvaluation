@@ -10,9 +10,9 @@ logging.basicConfig(level=logging.INFO)
 # ---------------------------------------------------------------------
 # Simulated Credit Bureau (could be replaced by a real external service)
 # ---------------------------------------------------------------------
-def get_credit_bureau_data(nom: str, prenom: str):
+def get_credit_bureau_data(nom: str):
     """Simule la récupération des informations d’un bureau de crédit."""
-    random.seed(hash(nom + prenom) % 10000)
+    random.seed(hash(nom) % 10000)
     return {
         "historique_paiement": random.choice(["excellent", "bon", "moyen", "mauvais"]),
         "dettes_en_cours": random.randint(0, 5),
@@ -35,7 +35,7 @@ def compute_credit_score(data: dict) -> (float, dict):
     nom = data.get("nom", "")
     prenom = data.get("prenom", "")
 
-    bureau = get_credit_bureau_data(nom, prenom)
+    bureau = get_credit_bureau_data(nom)
     score_bureau = bureau["score_bureau"]
 
     # --- 1. Ratio revenu / dépense ---
