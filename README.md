@@ -58,8 +58,8 @@ Each service runs as an independent SOAP endpoint and communicates using JSON-en
 $ git clone https://github.com/LyCrash/SOA-SOAP-LoanEvaluation.git
 $ cd SOA-SOAP-LoanEvaluation
 $ python -m venv venv
-$ venv\Scripts\activate   # or source venv/bin/activate on Linux
-$ pip install -r requirements.txt
+$ .\venv\Scripts\activate   # or source venv/bin/activate on Linux
+$ pip install -r src\requirements.txt
 ```
 ### Start all services
 ```bash
