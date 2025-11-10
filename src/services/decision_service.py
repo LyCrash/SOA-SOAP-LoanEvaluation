@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.INFO)
 # ---------------------------------------------------------------------
 
 POLICY = {
-    "min_credit_score": 50,           # Slightly lower threshold (was 55)
+    "min_credit_score": 40,           # Slightly lower threshold
     "max_loan_to_value": 0.9,         # Slightly higher tolerance
     "max_debt_to_income": 0.5,        # Allow higher ratio for realistic middle-class loans
     "base_interest_rate": 3.0,        # %

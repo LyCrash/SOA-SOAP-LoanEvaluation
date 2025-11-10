@@ -1,9 +1,12 @@
 import json
+import time
 from suds.client import Client
 
+# --- CONFIG --- #
 COMPOSITE = "http://127.0.0.1:8000/LoanEvaluationService?wsdl"
 client = Client(COMPOSITE)
 
+# --- Loan request text --- #
 loan_text = """
 Nom du Client: Marc Lefevre
 Adresse: 25 Avenue des Sciences, Lyon
@@ -15,14 +18,37 @@ Dépenses Mensuelles: 1500
 Description de la Propriété: Maison individuelle récente de 120m² avec jardin, située dans un quartier résidentiel calme. État du bien excellent.
 """
 
-print("Submitting (likely APPROVE) ...")
-resp_json = client.service.submitRequest(loan_text)
-resp = json.loads(resp_json)
-print(f"Request {json.dumps(resp['request_id'], indent=2, ensure_ascii=False)} submitted successfully")
+# --- 1️⃣ Submit the request --- #
+print("📨 Submitting loan request (expected: rejection)...")
+response_json = client.service.submitRequest(loan_text)
+response = json.loads(response_json)
 
-if resp.get("status") == "done":
-    print("\nFinal decision:")
-    print(json.dumps(resp["decision"], indent=2, ensure_ascii=False))
-    print(f"\nRequest ID: {resp['request_id']}")
+if response.get("status") != "done":
+    print("❌ Error submitting request:", response.get("message"))
+    exit()
+
+request_id = response["request_id"]
+print(f"✅ Request submitted successfully! ID: {request_id}")
+
+# Note: The service already processed the decision synchronously,
+# but we simulate an asynchronous workflow by calling getResult separately.
+
+# --- 2️⃣ Wait (simulate delay if processing was async) --- #
+print("\n⏳ Waiting for processing to complete (simulated delay)...")
+time.sleep(2)
+
+# --- 3️⃣ Fetch results using getResult --- #
+print("\n📥 Fetching result using getResult...")
+result_json = client.service.getResult(request_id)
+result = json.loads(result_json)
+
+if result.get("status") == "error":
+    print(f"⚠️ {result.get('message')}")
 else:
-    print("\nError or unexpected response.")
+    print(f"\n✅ Final decision for {request_id}:")
+    print(json.dumps(result.get("result", result), indent=2, ensure_ascii=False))
+
+    # If you want to print only key summary info:
+    decision = result.get("result", {})
+    msg = decision.get("message", "No message")
+    print(f"\nSummary: {msg}")
