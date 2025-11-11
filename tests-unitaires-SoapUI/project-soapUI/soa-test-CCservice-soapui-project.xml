@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="3e26a160-68e0-42e2-83c0-5c1e0ae5b0c8" activeEnvironment="Default" name="soa-test-CCservice" resourceRoot="" soapui-version="5.9.1" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="13c35abe-787d-47fd-91d2-551d831be815" wsaVersion="NONE" name="Application" type="wsdl" bindingName="{loan.services.credit}Application" soapVersion="1_1" anonymous="optional" definition="file:/C:/Users/LENOVO/Downloads/CreditCheckService.xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:\C:\Users\LENOVO\Downloads\CreditCheckService.xml"><con:part><con:url>file:\C:\Users\LENOVO\Downloads\CreditCheckService.xml</con:url><con:content><![CDATA[<wsdl:definitions targetNamespace="loan.services.credit" name="Application" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:plink="http://schemas.xmlsoap.org/ws/2003/05/partner-link/" xmlns:wsdlsoap11="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdlsoap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:soap11env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap12env="http://www.w3.org/2003/05/soap-envelope" xmlns:soap12enc="http://www.w3.org/2003/05/soap-encoding" xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing" xmlns:xop="http://www.w3.org/2004/08/xop/include" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:tns="loan.services.credit">
+  <wsdl:types>
+    <xs:schema targetNamespace="loan.services.credit" elementFormDefault="qualified">
+      <xs:complexType name="check_credit">
+        <xs:sequence>
+          <xs:element name="data" type="xs:string" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="check_creditResponse">
+        <xs:sequence>
+          <xs:element name="check_creditResult" type="xs:string" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="check_credit" type="tns:check_credit"/>
+      <xs:element name="check_creditResponse" type="tns:check_creditResponse"/>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="check_credit">
+    <wsdl:part name="check_credit" element="tns:check_credit"/>
+  </wsdl:message>
+  <wsdl:message name="check_creditResponse">
+    <wsdl:part name="check_creditResponse" element="tns:check_creditResponse"/>
+  </wsdl:message>
+  <wsdl:service name="CreditCheckService">
+    <wsdl:port name="Application" binding="tns:Application">
+      <wsdlsoap11:address location="http://127.0.0.1:8002/CreditCheckService"/>
+    </wsdl:port>
+  </wsdl:service>
+  <wsdl:portType name="Application">
+    <wsdl:operation name="check_credit" parameterOrder="check_credit">
+      <wsdl:documentation>Reçoit une chaîne JSON et retourne le score de crédit (0–100).</wsdl:documentation>
+      <wsdl:input name="check_credit" message="tns:check_credit"/>
+      <wsdl:output name="check_creditResponse" message="tns:check_creditResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="Application" type="tns:Application">
+    <wsdlsoap11:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="check_credit">
+      <wsdlsoap11:operation soapAction="check_credit" style="document"/>
+      <wsdl:input name="check_credit">
+        <wsdlsoap11:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="check_creditResponse">
+        <wsdlsoap11:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://127.0.0.1:8002/CreditCheckService</con:endpoint></con:endpoints><con:operation id="c711deda-36e5-4194-958f-3e0ead98689c" isOneWay="false" action="check_credit" name="check_credit" bindingOperationName="check_credit" type="Request-Response" outputName="check_creditResponse" inputName="check_credit" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="dc01e9ae-fef4-4358-a92c-359d607bb24f" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://127.0.0.1:8002/CreditCheckService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:loan="loan.services.credit">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <loan:check_credit>\r
+         <!--Optional:-->\r
+         <loan:data>
+{"nom": "Jeanne Petit",
+"montant_pret": 300000,
+"revenu_mensuel": 2000,
+"depenses_mensuelles": 1500,
+"age": 30,
+"emploi_stable": "non"}
+         </loan:data>\r
+      </loan:check_credit>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="check_credit"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/></con:soapui-project>

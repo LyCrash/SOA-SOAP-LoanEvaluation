@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="0fe6f9e0-fa67-4a71-b1e3-a36bf8c49210" activeEnvironment="Default" name="soa-test-IEservice" resourceRoot="" soapui-version="5.9.1" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="203538da-5f8b-48cf-93cd-10548d1bba95" wsaVersion="NONE" name="Application" type="wsdl" bindingName="{loan.services.information}Application" soapVersion="1_1" anonymous="optional" definition="file:/C:/Users/LENOVO/Downloads/InformationExtractionService.xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:\C:\Users\LENOVO\Downloads\InformationExtractionService.xml"><con:part><con:url>file:\C:\Users\LENOVO\Downloads\InformationExtractionService.xml</con:url><con:content><![CDATA[<wsdl:definitions targetNamespace="loan.services.information" name="Application" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:plink="http://schemas.xmlsoap.org/ws/2003/05/partner-link/" xmlns:wsdlsoap11="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdlsoap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:soap11env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap12env="http://www.w3.org/2003/05/soap-envelope" xmlns:soap12enc="http://www.w3.org/2003/05/soap-encoding" xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing" xmlns:xop="http://www.w3.org/2004/08/xop/include" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:tns="loan.services.information">
+  <wsdl:types>
+    <xs:schema targetNamespace="loan.services.information" elementFormDefault="qualified">
+      <xs:complexType name="extract_information">
+        <xs:sequence>
+          <xs:element name="text" type="xs:string" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="extract_informationResponse">
+        <xs:sequence>
+          <xs:element name="extract_informationResult" type="xs:string" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="extract_information" type="tns:extract_information"/>
+      <xs:element name="extract_informationResponse" type="tns:extract_informationResponse"/>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="extract_information">
+    <wsdl:part name="extract_information" element="tns:extract_information"/>
+  </wsdl:message>
+  <wsdl:message name="extract_informationResponse">
+    <wsdl:part name="extract_informationResponse" element="tns:extract_informationResponse"/>
+  </wsdl:message>
+  <wsdl:service name="InformationExtractionService">
+    <wsdl:port name="Application" binding="tns:Application">
+      <wsdlsoap11:address location="http://127.0.0.1:8001/InformationExtractionService"/>
+    </wsdl:port>
+  </wsdl:service>
+  <wsdl:portType name="Application">
+    <wsdl:operation name="extract_information" parameterOrder="extract_information">
+      <wsdl:documentation>Extract structured info from a raw loan request text.</wsdl:documentation>
+      <wsdl:input name="extract_information" message="tns:extract_information"/>
+      <wsdl:output name="extract_informationResponse" message="tns:extract_informationResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="Application" type="tns:Application">
+    <wsdlsoap11:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="extract_information">
+      <wsdlsoap11:operation soapAction="extract_information" style="document"/>
+      <wsdl:input name="extract_information">
+        <wsdlsoap11:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="extract_informationResponse">
+        <wsdlsoap11:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://127.0.0.1:8001/InformationExtractionService</con:endpoint></con:endpoints><con:operation id="f224cbc7-b643-47ce-acbc-800b19a052ff" isOneWay="false" action="extract_information" name="extract_information" bindingOperationName="extract_information" type="Request-Response" outputName="extract_informationResponse" inputName="extract_information" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="2539d2b6-1c22-49ea-abd5-c5b4745a0ea9" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://127.0.0.1:8001/InformationExtractionService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:loan="loan.services.information">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <loan:extract_information>\r
+         <loan:text>
+Nom du Client: Jeanne Petit
+Adresse: 5 Rue des Fleurs, Paris
+Email: jeanne.petit@email.com
+Numéro de Téléphone: +33600111222
+Montant du Prêt Demandé: 300000
+Revenu Mensuel: 2000
+Dépenses Mensuelles: 1500
+Description de la Propriété: Petit appartement ancien, nécessite quelques travaux.
+         </loan:text>\r
+      </loan:extract_information>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="extract_information"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/></con:soapui-project>

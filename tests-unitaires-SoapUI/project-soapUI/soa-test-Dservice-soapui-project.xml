@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="64cf98f7-b70d-455f-b3ae-543c31e6058b" activeEnvironment="Default" name="soa-test-Dservice" resourceRoot="" soapui-version="5.9.1" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="edbde79c-7b6c-4304-99d9-03f0b8b1decd" wsaVersion="NONE" name="Application" type="wsdl" bindingName="{loan.services.decision}Application" soapVersion="1_1" anonymous="optional" definition="file:/C:/Users/LENOVO/Downloads/DecisionService.xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:\C:\Users\LENOVO\Downloads\DecisionService.xml"><con:part><con:url>file:\C:\Users\LENOVO\Downloads\DecisionService.xml</con:url><con:content><![CDATA[<wsdl:definitions targetNamespace="loan.services.decision" name="Application" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:plink="http://schemas.xmlsoap.org/ws/2003/05/partner-link/" xmlns:wsdlsoap11="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdlsoap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:soap11env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap12env="http://www.w3.org/2003/05/soap-envelope" xmlns:soap12enc="http://www.w3.org/2003/05/soap-encoding" xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing" xmlns:xop="http://www.w3.org/2004/08/xop/include" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:tns="loan.services.decision">
+  <wsdl:types>
+    <xs:schema targetNamespace="loan.services.decision" elementFormDefault="qualified">
+      <xs:complexType name="make_decision">
+        <xs:sequence>
+          <xs:element name="data" type="xs:string" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="make_decisionResponse">
+        <xs:sequence>
+          <xs:element name="make_decisionResult" type="xs:string" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="make_decision" type="tns:make_decision"/>
+      <xs:element name="make_decisionResponse" type="tns:make_decisionResponse"/>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="make_decision">
+    <wsdl:part name="make_decision" element="tns:make_decision"/>
+  </wsdl:message>
+  <wsdl:message name="make_decisionResponse">
+    <wsdl:part name="make_decisionResponse" element="tns:make_decisionResponse"/>
+  </wsdl:message>
+  <wsdl:service name="DecisionService">
+    <wsdl:port name="Application" binding="tns:Application">
+      <wsdlsoap11:address location="http://127.0.0.1:8004/DecisionService"/>
+    </wsdl:port>
+  </wsdl:service>
+  <wsdl:portType name="Application">
+    <wsdl:operation name="make_decision" parameterOrder="make_decision">
+      <wsdl:documentation>Receives JSON data and returns loan approval decision.</wsdl:documentation>
+      <wsdl:input name="make_decision" message="tns:make_decision"/>
+      <wsdl:output name="make_decisionResponse" message="tns:make_decisionResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="Application" type="tns:Application">
+    <wsdlsoap11:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="make_decision">
+      <wsdlsoap11:operation soapAction="make_decision" style="document"/>
+      <wsdl:input name="make_decision">
+        <wsdlsoap11:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="make_decisionResponse">
+        <wsdlsoap11:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://127.0.0.1:8004/DecisionService</con:endpoint></con:endpoints><con:operation id="5cdabd0f-1202-47e3-be02-dcea56d91c8d" isOneWay="false" action="make_decision" name="make_decision" bindingOperationName="make_decision" type="Request-Response" outputName="make_decisionResponse" inputName="make_decision" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="c18686f2-1eb6-49fb-a262-f34b7ab5de66" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://127.0.0.1:8004/DecisionService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:loan="loan.services.decision">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <loan:make_decision>\r
+         <loan:data>
+{"credit_score": 38.5,
+"property_value": 180000,
+"loan_amount": 300000,
+"revenu_mensuel": 2000,
+"depenses_mensuelles": 1500}
+         </loan:data>\r
+      </loan:make_decision>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="make_decision"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/></con:soapui-project>

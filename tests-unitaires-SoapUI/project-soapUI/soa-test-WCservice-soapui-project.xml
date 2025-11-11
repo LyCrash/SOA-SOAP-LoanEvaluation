@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="b1cae71d-91f3-43d0-bf17-04b09984da93" activeEnvironment="Default" name="soa-test-WCservice" resourceRoot="" soapui-version="5.9.1" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="0c23aa83-773a-44f3-a380-de893e88dfb4" wsaVersion="NONE" name="Application" type="wsdl" bindingName="{loan.composite}Application" soapVersion="1_1" anonymous="optional" definition="file:/C:/Users/LENOVO/Downloads/LoanEvaluationService.xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:\C:\Users\LENOVO\Downloads\LoanEvaluationService.xml"><con:part><con:url>file:\C:\Users\LENOVO\Downloads\LoanEvaluationService.xml</con:url><con:content><![CDATA[<wsdl:definitions targetNamespace="loan.composite" name="Application" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:plink="http://schemas.xmlsoap.org/ws/2003/05/partner-link/" xmlns:wsdlsoap11="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdlsoap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:soap11env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap12env="http://www.w3.org/2003/05/soap-envelope" xmlns:soap12enc="http://www.w3.org/2003/05/soap-encoding" xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing" xmlns:xop="http://www.w3.org/2004/08/xop/include" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:tns="loan.composite">
+  <wsdl:types>
+    <xs:schema targetNamespace="loan.composite" elementFormDefault="qualified">
+      <xs:complexType name="getResult">
+        <xs:sequence>
+          <xs:element name="request_id" type="xs:string" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getResultResponse">
+        <xs:sequence>
+          <xs:element name="getResultResult" type="xs:string" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="submitRequest">
+        <xs:sequence>
+          <xs:element name="request_text" type="xs:string" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="submitRequestResponse">
+        <xs:sequence>
+          <xs:element name="submitRequestResult" type="xs:string" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="getResult" type="tns:getResult"/>
+      <xs:element name="getResultResponse" type="tns:getResultResponse"/>
+      <xs:element name="submitRequest" type="tns:submitRequest"/>
+      <xs:element name="submitRequestResponse" type="tns:submitRequestResponse"/>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="submitRequest">
+    <wsdl:part name="submitRequest" element="tns:submitRequest"/>
+  </wsdl:message>
+  <wsdl:message name="submitRequestResponse">
+    <wsdl:part name="submitRequestResponse" element="tns:submitRequestResponse"/>
+  </wsdl:message>
+  <wsdl:message name="getResult">
+    <wsdl:part name="getResult" element="tns:getResult"/>
+  </wsdl:message>
+  <wsdl:message name="getResultResponse">
+    <wsdl:part name="getResultResponse" element="tns:getResultResponse"/>
+  </wsdl:message>
+  <wsdl:service name="LoanEvaluationComposite">
+    <wsdl:port name="Application" binding="tns:Application">
+      <wsdlsoap11:address location="http://127.0.0.1:8000/LoanEvaluationService"/>
+    </wsdl:port>
+  </wsdl:service>
+  <wsdl:portType name="Application">
+    <wsdl:operation name="submitRequest" parameterOrder="submitRequest">
+      <wsdl:documentation>Traite synchroniquement la demande entière et retourne la décision finale.
+        - Crée request_id
+        - Sauvegarde l'enregistrement initial (status=processing)
+        - Appelle IE -> CC -> PE -> DS
+        - Enregistre la décision, notifie, et retourne la décision + request_id</wsdl:documentation>
+      <wsdl:input name="submitRequest" message="tns:submitRequest"/>
+      <wsdl:output name="submitRequestResponse" message="tns:submitRequestResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getResult" parameterOrder="getResult">
+      <wsdl:documentation>Récupère l'enregistrement sauvegardé pour request_id (status + result).</wsdl:documentation>
+      <wsdl:input name="getResult" message="tns:getResult"/>
+      <wsdl:output name="getResultResponse" message="tns:getResultResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="Application" type="tns:Application">
+    <wsdlsoap11:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="submitRequest">
+      <wsdlsoap11:operation soapAction="submitRequest" style="document"/>
+      <wsdl:input name="submitRequest">
+        <wsdlsoap11:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="submitRequestResponse">
+        <wsdlsoap11:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getResult">
+      <wsdlsoap11:operation soapAction="getResult" style="document"/>
+      <wsdl:input name="getResult">
+        <wsdlsoap11:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getResultResponse">
+        <wsdlsoap11:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://127.0.0.1:8000/LoanEvaluationService</con:endpoint></con:endpoints><con:operation id="f77ac615-713e-4fb1-9a72-f8cca3ff3f6a" isOneWay="false" action="getResult" name="getResult" bindingOperationName="getResult" type="Request-Response" outputName="getResultResponse" inputName="getResult" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="731bf3d0-1662-42fe-b311-ca30273ab2ca" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://127.0.0.1:8000/LoanEvaluationService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:loan="loan.composite">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <loan:getResult>\r
+         <loan:request_id>REQ_20251111111135_8623</loan:request_id>\r
+      </loan:getResult>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="getResult"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="c7b3bf9c-3dc4-4fb7-8ccd-c86ca0bbd35f" isOneWay="false" action="submitRequest" name="submitRequest" bindingOperationName="submitRequest" type="Request-Response" outputName="submitRequestResponse" inputName="submitRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="a8184d25-529a-46f3-aec7-8b4994c8c71e" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://127.0.0.1:8000/LoanEvaluationService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:loan="loan.composite">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <loan:submitRequest>\r
+         <loan:request_text>
+Nom du Client: Jeanne Petit
+Adresse: 5 Rue des Fleurs, Paris
+Email: jeanne.petit@email.com
+Numéro de Téléphone: +33600111222
+Montant du Prêt Demandé: 300000
+Revenu Mensuel: 2000
+Dépenses Mensuelles: 1500
+Description de la Propriété: Petit appartement ancien, nécessite quelques travaux.
+         </loan:request_text>\r
+      </loan:submitRequest>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="submitRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/></con:soapui-project>
